@@ -1,13 +1,35 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
+@import url(./vendor/fonts/fonts.css);
+@import url(./vendor/normalize.css);
+@import url(./components/blocks/body/body.css);
+@import url(./components/blocks/page/page.css);
+@import url(./components/Header/Header.css);
+@import url(./components/blocks/page/__header/page__header.css);
+@import url(./components/Header/__logo/header__logo.css);
+@import url(./components/blocks/page/__main/page__main.css);
+@import url(./components/blocks/profile/profile.css);
+@import url(./components/blocks/profile/__info/profile__info.css);
+@import url(./components/blocks/profile/__avatar/profile__avatar.css);
+@import url(./components/blocks/profile/__avatar-overlay/profile__avatar-overlay.css);
+@import url(./components/blocks/profile/__avatar-edit/profile__avatar-edit.css);
+@import url(./components/blocks/profile/__item/profile__item.css);
+@import url(./components/blocks/profile/__name-box/profile__name-box.css);
+@import url(./components/blocks/profile/__name/profile__name.css);
+@import url(./components/blocks/profile/__edit-button/profile__edit-button.css);
+@import url(./components/blocks/profile/__about-me/profile__about-me.css);
+@import url(./components/blocks/profile/__add-button/profile__add-button.css);
+@import url(./components/blocks/profile/__plus-button/profile__plus-button.css);
+@import url(./components/blocks/elements/elements.css);
+@import url(./components/blocks/elements/__list/elements__list.css);
+@import url(./components/blocks/elements/__card/elements__card.css);
+@import url(./components/blocks/elements/__photo/elements__photo.css);
+@import url(./components/blocks/elements/__info/elements__info.css);
+@import url(./components/blocks/elements/__title/elements__title.css);
+@import url(./components/blocks/elements/__like-are/elements__like-area.css);
+@import url(./components/blocks/elements/__like-button/elements__like-button.css);
+@import url(./components/blocks/elements/__like-button/_active/elements__like-button_active.css);
+@import url(./components/blocks/elements/__like-counter/elements__like-counter.css);
+@import url(./components/blocks/elements/__delete-button/elements__delete-button.css);
+@import url(./components/blocks/page/__footer/page__footer.css);
+@import url(./components/Main/Main.css);
+@import url(./components/Footer/Footer.css);
+@import url(./components/Footer/__copyright/Footer__copyright.css);
