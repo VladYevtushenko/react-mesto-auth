@@ -1,6 +1,6 @@
 .profile__avatar-edit {
     background-color: transparent;
-    background-image: url(../../../../images/prof-pen.svg);
+    background-image: url(../../../images/prof-pen.svg);
     border: none;
     cursor: pointer;
     width: 26px;
