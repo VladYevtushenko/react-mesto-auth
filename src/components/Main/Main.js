@@ -9,17 +9,7 @@ function Main ({onEditAvatar, onEditProfile, onAddPlace, onCardClick }) {
     const [cards, setCards] = useState([]);
 
     useEffect(() => {
-        const getProfile = new Promise((resolve) => {
-            resolve(api.getProfile())
-        })
-        .catch(err => console.err(err))
-
-        const getInitialCards = new Promise((resolve) => {
-            resolve(api.getInitialCards())
-        })
-        .catch(err => console.err(err))
-
-        Promise.all([getProfile, getInitialCards])
+        Promise.all([api.getProfile(), api.getInitialCards()])
             .then(res => {
                 const getProfile = res[0];
                 const getInitialCards = res[1];

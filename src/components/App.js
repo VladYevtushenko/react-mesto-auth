@@ -57,7 +57,7 @@ function App() {
 				<span className="popup__error popupProfAboutMe-error"></span>
 			</PopupWithForm>
 
-			<PopupWithForm name="card" title="Новое место" isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}>
+			<PopupWithForm name="card" title="Новое место"  btnName="Добавить" isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}>
 				<input type="text" className="popup__input" placeholder="Название" id="popupCardName" name="cardName" minLength="2" maxLength="30" required />
 				<span className="popup__error popupCardName-error"></span>
 				<input type="url" className="popup__input" placeholder="Ссылка на картинку" id="popupImageLink" name="cardLink" required />
