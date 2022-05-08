@@ -32,7 +32,7 @@ function Main ({onEditAvatar, onEditProfile, onAddPlace, onCardClick, cards }) {
         <main className="main">
             <section className="profile">
                 <div className="profile__info">
-                    <img src={currentUser.avatr} alt="аватар профиля" className="profile__avatar" />
+                    <img src={currentUser.avatar} alt="аватар профиля" className="profile__avatar" />
                     <div className="profile__avatar-overlay">
                         <button className="profile__avatar-edit" type="button" aria-label="avatar-edit" onClick={onEditAvatar}></button>
                     </div>
