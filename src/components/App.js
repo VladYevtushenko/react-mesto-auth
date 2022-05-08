@@ -14,6 +14,8 @@ function App() {
 	const [slectedCard, setSelectedCard] = useState(null);
 	const [cards, setCards] = useState([]);
 	const [currentUser, setCurrentUser] = useState({});
+	// const [cardDelete, setCardDelete] = useState();
+
 
 	function handleEditProfileClick() {
 		setIsEditProfilePopupOpen(true);
@@ -27,6 +29,8 @@ function App() {
 		setIsEditAvatarPopupOpen(true);
 	};
 
+	// function handleConfirmDelete()
+
 	function closeAllPopups() {
 		setIsEditProfilePopupOpen(false);
 		setIsAddPlacePopupOpen(false);
@@ -37,6 +41,22 @@ function App() {
 	function handleCardClick(card) {
 		setSelectedCard(card)
 	};
+
+	function handleCardLike(card) {
+        const isLiked = card.likes.some(i => i._id === currentUser._id);
+        
+        api.changeLikeCardStatus(card._id, !isLiked).then((newCard) => {
+            setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+        });
+    }
+
+	// function handleCardDelete() {
+	// 	api.deleteCard(cardDelete._id)
+	// 	then.(() => {
+	// 		setCards((state) => state.filter((c) => c._id !== cardDelete._id));
+	// 		closeAllPopups();
+	// 	})
+	// }
 
 	useEffect(() => {
 		api.getProfile()
@@ -58,6 +78,7 @@ function App() {
 					onAddPlace={handleAddPlaceClick}
 					onEditAvatar={handleEditAvatarClick}
 					onCardClick={handleCardClick}
+					onCardLike={handleCardLike}
 				/>
 				<Footer />
 
