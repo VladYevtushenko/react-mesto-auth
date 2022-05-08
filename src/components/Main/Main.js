@@ -3,7 +3,7 @@ import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 // import api from '../../utils/Api';
 import Card from '../Card/Card';
 
-function Main ({onEditAvatar, onEditProfile, onAddPlace, onCardClick, onCardLike, cards }) {
+function Main ({onEditAvatar, onEditProfile, onAddPlace, onCardClick, onCardLike, onCardDelete, cards }) {
     const currentUser = useContext(CurrentUserContext);
     // const [userAvatr, setUserAvatar] = useState('#');
     // const [userName, setUserName] = useState('...');
@@ -48,7 +48,7 @@ function Main ({onEditAvatar, onEditProfile, onAddPlace, onCardClick, onCardLike
             </section>
             <section className="elements">
                 <ul className="elements__list">
-                    {cards.map((card) => <Card card={card} key={card._id} onCardClick={onCardClick} onCardLike={onCardLike} />)}
+                    {cards.map((card) => <Card card={card} key={card._id} onCardClick={onCardClick} onCardLike={onCardLike} onCardDelete={onCardDelete} />)}
                 </ul>
             </section>
         </main>

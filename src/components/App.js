@@ -4,6 +4,7 @@ import Main from './Main/Main';
 import Footer from './Footer/Footer';
 import PopupWithForm from './popup-components/PopupWithForm';
 import ImagePopup from './popup-components/ImagePopup';
+import ConfirmPopup from './popup-components/ConfirmPopup';
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import api from '../utils/Api';
 
@@ -14,7 +15,8 @@ function App() {
 	const [slectedCard, setSelectedCard] = useState(null);
 	const [cards, setCards] = useState([]);
 	const [currentUser, setCurrentUser] = useState({});
-	// const [cardDelete, setCardDelete] = useState();
+	const [cardDelete, setCardDelete] = useState();
+	const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false);
 
 
 	function handleEditProfileClick() {
@@ -29,12 +31,16 @@ function App() {
 		setIsEditAvatarPopupOpen(true);
 	};
 
-	// function handleConfirmDelete()
+	function handleConfirmDelete(card) {
+		setIsConfirmPopupOpen(true);
+		setCardDelete(card);
+	}
 
 	function closeAllPopups() {
 		setIsEditProfilePopupOpen(false);
 		setIsAddPlacePopupOpen(false);
 		setIsEditAvatarPopupOpen(false);
+		setIsConfirmPopupOpen(false);
 		setSelectedCard(null);
 	};
 
@@ -50,22 +56,22 @@ function App() {
         });
     }
 
-	// function handleCardDelete() {
-	// 	api.deleteCard(cardDelete._id)
-	// 	then.(() => {
-	// 		setCards((state) => state.filter((c) => c._id !== cardDelete._id));
-	// 		closeAllPopups();
-	// 	})
-	// }
+	function handleCardDelete() {
+		api.deleteCard(cardDelete._id)
+		.then(() => {
+			setCards((state) => state.filter((c) => c._id !== cardDelete._id));
+			closeAllPopups();
+		})
+	}
 
 	useEffect(() => {
-		api.getProfile()
-			.then(user => setCurrentUser(user))
-			.catch(err => console.log(err));
-
-		api.getInitialCards()
-			.then(card => {setCards(card)})
-			.catch(err => console.log(err));
+		Promise.all([api.getProfile(), api.getInitialCards()])
+			.then((res) => {
+				const [userData, cards] = res;
+				setCurrentUser(userData);
+				setCards(cards);
+			})
+			.catch((err) => console.log(err));
 	}, []);
 
 	return (
@@ -79,6 +85,7 @@ function App() {
 					onEditAvatar={handleEditAvatarClick}
 					onCardClick={handleCardClick}
 					onCardLike={handleCardLike}
+					onCardDelete={handleConfirmDelete}
 				/>
 				<Footer />
 
@@ -101,7 +108,7 @@ function App() {
 					<span className="popup__error popupImageLink-error"></span>
 				</PopupWithForm>
 
-				<PopupWithForm name="del-confirm" title="Вы уверены?" btnName="Да"></PopupWithForm>
+				<ConfirmPopup isOpen={isConfirmPopupOpen} onClose={closeAllPopups} onCardDelete={handleCardDelete} />
 
 				<ImagePopup card={slectedCard} onClose={closeAllPopups} />
 
