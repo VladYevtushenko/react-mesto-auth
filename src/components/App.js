@@ -14,6 +14,7 @@ function App() {
 	const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
 	const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
 	const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+	const [isImagePopupOpen, setImagePopupOpen] = useState(false);
 	const [slectedCard, setSelectedCard] = useState(null);
 	const [cards, setCards] = useState([]);
 	const [currentUser, setCurrentUser] = useState({});
@@ -42,11 +43,13 @@ function App() {
 		setIsAddPlacePopupOpen(false);
 		setIsEditAvatarPopupOpen(false);
 		setIsConfirmPopupOpen(false);
+		setImagePopupOpen(false);
 		setSelectedCard(null);
 	};
 
 	function handleCardClick(card) {
-		setSelectedCard(card)
+		setSelectedCard(card);
+		setImagePopupOpen(true);
 	};
 
 	function handleCardLike(card) {
@@ -102,6 +105,18 @@ function App() {
 			.catch((err) => console.log(err));
 	}
 
+	function closeByEsc(evt) {
+		if (evt.key === 'Escape') {
+			evt.preventDefault();
+			closeAllPopups();
+		}
+	}
+
+	useEffect(() => {
+		document.addEventListener('keydown', closeByEsc);
+		return () => document.removeEventListener('keydown', closeByEsc)
+	}, []);
+
 	return (
 		<CurrentUserContext.Provider value={currentUser}>
 			<div>
@@ -125,7 +140,7 @@ function App() {
 
 				<ConfirmPopup isOpen={isConfirmPopupOpen} onClose={closeAllPopups} onCardDelete={handleCardDelete} />
 
-				<ImagePopup card={slectedCard} onClose={closeAllPopups} />
+				<ImagePopup card={slectedCard} isOpen={isImagePopupOpen} onClose={closeAllPopups} />
 
 			</div>
 		</CurrentUserContext.Provider>
