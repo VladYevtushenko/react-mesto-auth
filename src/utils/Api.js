@@ -23,8 +23,8 @@ class Api {
             method: 'PATCH',
             headers: this._headers,
             body: JSON.stringify({
-                name: userData.userName,
-                about: userData.aboutMe
+                name: userData.name,
+                about: userData.about
             })
         })
         .then(this._getResponseData)
@@ -46,8 +46,8 @@ class Api {
             method: 'POST',
             headers: this._headers,
             body: JSON.stringify({
-                name: card.cardName,
-                link: card.cardLink
+                name: card.name,
+                link: card.link
             })
         })
         .then(this._getResponseData)
@@ -61,20 +61,20 @@ class Api {
         .then(this._getResponseData)
     }
 
-    deleteLike(id) {
-        return fetch(`${this._baseUrl}/cards/${id}/likes`, {
-            method: 'DELETE',
-            headers: this._headers,
-        })
-        .then(this._getResponseData)
-    }
-
-    addLike(id) {
-        return fetch(`${this._baseUrl}/cards/${id}/likes`, {
-            method: 'PUT',
-            headers: this._headers,
-        })
-        .then(this._getResponseData)
+    changeLikeCardStatus(id, setLike) {
+        if(setLike) {
+            return fetch(`${this._baseUrl}/cards/${id}/likes`, {
+                method: 'PUT',
+                headers: this._headers,
+            })
+            .then(this._getResponseData);
+        } else {
+            return fetch(`${this._baseUrl}/cards/${id}/likes`, {
+                method: 'DELETE',
+                headers: this._headers,
+            })
+            .then(this._getResponseData);
+        }
     }
 
     _getResponseData(res) {
