@@ -46,8 +46,8 @@ class Api {
             method: 'POST',
             headers: this._headers,
             body: JSON.stringify({
-                name: card.cardName,
-                link: card.cardLink
+                name: card.name,
+                link: card.link
             })
         })
         .then(this._getResponseData)
