@@ -18,8 +18,13 @@ function App() {
 	const [slectedCard, setSelectedCard] = useState(null);
 	const [cards, setCards] = useState([]);
 	const [currentUser, setCurrentUser] = useState({});
-	const [cardDelete, setCardDelete] = useState();
+	const [cardDelete, setCardDelete] = useState(null);
 	const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false);
+	const [changeAvaButtonName, setChangeAvaButtonName] = useState('Сохранить');
+	const [changeProfileEditButtonName, setChangeProfileEditButtonName] = useState('Сохранить');
+	const [changeAddPlaceButtonName, setChangeAddPlaceButtonName] = useState('Создать');
+	const [changeDelButtonName, setChangeDelButtonName] = useState('Да');
+	
 
 	function handleEditAvatarClick() {
 		setIsEditAvatarPopupOpen(true);
@@ -57,15 +62,21 @@ function App() {
         
         api.changeLikeCardStatus(card._id, !isLiked).then((newCard) => {
             setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
-        });
+        })
+			.catch((err) => console.log(err));
     }
 
 	function handleCardDelete() {
+		setChangeDelButtonName('Удаление...');
 		api.deleteCard(cardDelete._id)
-		.then(() => {
-			setCards((state) => state.filter((c) => c._id !== cardDelete._id));
-			closeAllPopups();
-		})
+			.then(() => {
+				setCards((state) => state.filter((c) => c._id !== cardDelete._id));
+				closeAllPopups();
+			})
+			.catch((err) => console.log(err))
+			.finally(() => {
+				setChangeDelButtonName('Да')
+			});
 	}
 
 	useEffect(() => {
@@ -79,40 +90,51 @@ function App() {
 	}, []);
 
 	function handleEditAvatar({avatar}) {
+		setChangeAvaButtonName('Сохраняю...');
 		api.editAvatar(avatar)
 			.then(user => {
 				setCurrentUser(user);
 				closeAllPopups();
 			})
-			.catch((err) => console.log(err));
+			.catch((err) => console.log(err))
+			.finally(() => {
+				setChangeAvaButtonName('Сохранить')
+			});
 	}
 
 	function handleEditUser(userData) {
+		setChangeProfileEditButtonName('Сохраняю...');
 		api.editProfile(userData)
 			.then(userData => {
 				setCurrentUser(userData);
 				closeAllPopups();
 			})
-			.catch((err) => console.log(err));
+			.catch((err) => console.log(err))
+			.finally(() => {
+				setChangeProfileEditButtonName('Сохранить')
+			});
 	}
 
 	function handleAddPlace(card) {
+		setChangeAddPlaceButtonName('Создание...');
 		api.postCard(card)
 			.then(newCard => {
 				setCards([newCard, ...cards]);
 				closeAllPopups();
 			})
-			.catch((err) => console.log(err));
-	}
-
-	function closeByEsc(evt) {
-		if (evt.key === 'Escape') {
-			evt.preventDefault();
-			closeAllPopups();
-		}
+			.catch((err) => console.log(err))
+			.finally(() => {
+				setChangeAddPlaceButtonName('Создать')
+			});			
 	}
 
 	useEffect(() => {
+		function closeByEsc(evt) {
+			if (evt.key === 'Escape') {
+				evt.preventDefault();
+				closeAllPopups();
+			}
+		}
 		document.addEventListener('keydown', closeByEsc);
 		return () => document.removeEventListener('keydown', closeByEsc)
 	}, []);
@@ -132,15 +154,39 @@ function App() {
 				/>
 				<Footer />
 
-				<EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onEditAvatar={handleEditAvatar} />
+				<EditAvatarPopup 
+					isOpen={isEditAvatarPopupOpen} 
+					onClose={closeAllPopups} 
+					onEditAvatar={handleEditAvatar}
+					buttonText={changeAvaButtonName}
+				/>
 
-				<EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onEditUser={handleEditUser} />
+				<EditProfilePopup 
+					isOpen={isEditProfilePopupOpen} 
+					onClose={closeAllPopups} 
+					onEditUser={handleEditUser}
+					buttonText={changeProfileEditButtonName}
+				/>
 
-				<AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlace} />
+				<AddPlacePopup 
+					isOpen={isAddPlacePopupOpen} 
+					onClose={closeAllPopups} 
+					onAddPlace={handleAddPlace}
+					buttonText={changeAddPlaceButtonName}
+				/>
 
-				<ConfirmPopup isOpen={isConfirmPopupOpen} onClose={closeAllPopups} onCardDelete={handleCardDelete} />
+				<ConfirmPopup 
+					isOpen={isConfirmPopupOpen} 
+					onClose={closeAllPopups} 
+					onCardDelete={handleCardDelete}
+					buttonText={changeDelButtonName}
+				/>
 
-				<ImagePopup card={slectedCard} isOpen={isImagePopupOpen} onClose={closeAllPopups} />
+				<ImagePopup 
+					card={slectedCard} 
+					isOpen={isImagePopupOpen} 
+					onClose={closeAllPopups} 
+				/>
 
 			</div>
 		</CurrentUserContext.Provider>
