@@ -8,9 +8,13 @@ import EditAvatarPopup from './popup-components/EditAvatarPopup';
 import EditProfilePopup from "./popup-components/EditProfilePopup";
 import ImagePopup from './popup-components/ImagePopup';
 import ConfirmPopup from './popup-components/ConfirmPopup';
+import Register from './popup-components/Register';
+import Login from './Login';
 import AddPlacePopup from './popup-components/AddPlacePopup';
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import api from '../utils/Api';
+import { register, authorize, getContent } from "../utils/Auth";
+import InfoToolTip from './InfoToolTip';
 
 function App() {
 	const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -26,11 +30,14 @@ function App() {
 	const [changeProfileEditButtonName, setChangeProfileEditButtonName] = useState('Сохранить');
 	const [changeAddPlaceButtonName, setChangeAddPlaceButtonName] = useState('Создать');
 	const [changeDelButtonName, setChangeDelButtonName] = useState('Да');
+	const [changeAuthBtnName, setChangeAuthBtnName] = useState('Сохранить');
+	const [changeLoginBtnName, setChangeLoginBtnName] = useState('Войти ');
+	const [isRegisterFormOpen, setIsRegistgerFormOpen] = useState(false);
 	
 	const [loggedIn, setLoggedIn] = useState(false);
 	const [email, setEmail] = useState('');
-	const [isSignUp, setIsSingUp] = useState(false);
-	const [signUpError, setSingUpError] = useState('');
+	const [isSignup, setIsSignup] = useState(false);
+	const [signupError, setSignupError] = useState('');
 	const history = useHistory();
 	
 
@@ -57,6 +64,7 @@ function App() {
 		setIsEditAvatarPopupOpen(false);
 		setIsConfirmPopupOpen(false);
 		setImagePopupOpen(false);
+		setIsRegistgerFormOpen(false);
 		setSelectedCard(null);
 	};
 
@@ -136,6 +144,75 @@ function App() {
 			});			
 	}
 
+	function handleRegister(password, email) {
+		setChangeAuthBtnName('Сохраняю...');
+		return register(password, email)
+			.then(res => {
+				if(res.data._id) {
+					setIsSignup(true);
+					setIsRegistgerFormOpen(true);
+					setTimeout(() => {
+						setIsRegistgerFormOpen(false);
+					}, 2000);
+					history.push('/sign-in');
+				} else {
+					setIsSignup(false);
+					setIsRegistgerFormOpen(true);
+				}
+			})
+		
+		.finally(() => {
+			setChangeAuthBtnName('Сохраняю...')
+		});
+	}
+
+	function handleLogin(password, email) {
+		setChangeLoginBtnName('Вход...');
+		return authorize(password, email)
+			.then(data => {
+				if (data.token) {
+					localStorage.setItem('jwt', data.token);
+					checkToken();
+				}
+			})
+			.catch(err => {
+				console.log(err.message);
+				setSignupError('Некорректный email или пароль');
+				setIsSignup(false);
+				setIsRegistgerFormOpen(true);
+			})
+			.finally(() => setChangeLoginBtnName('Вход...'));
+	}
+
+	function checkToken() {
+		if (localStorage.getItem('jwt')) {
+			let token = localStorage.getItem('jwt');
+			getContent(token)
+				.then(res => {
+					setEmail(res.data.email);
+					setLoggedIn(true);
+				})
+				.catch(err => console.log(err.message));
+		}
+	}
+
+	useEffect(() => {
+		checkToken();
+	}, []);
+
+	useEffect(() => {
+		if (loggedIn) {
+			history.push('/')
+		}
+	}, [loggedIn]);
+
+	function handleSingOut() {
+		localStorage.removeItem('jwt');
+		setEmail('');
+		setLoggedIn(false);
+		history.push('/sing-in');
+	}
+
 	useEffect(() => {
 		function closeByEsc(evt) {
 			if (evt.key === 'Escape') {
@@ -153,7 +230,7 @@ function App() {
 				<Header 
 					loggedIn={loggedIn}
 					email={email}
-					// onSignOut={handleSingOut}
+					onSignOut={handleSingOut}
 				/>
 
 				<Switch>
@@ -170,11 +247,19 @@ function App() {
 					</ProtectedRoute>
 
 					<Route path="/sign-up">
-
+						<Register 
+							title="Регистрация"
+							onRegister={handleRegister}
+							buttonText={changeAuthBtnName}
+						/>
 					</Route>
 
 					<Route path="/sign-in">
-
+						<Login 
+							title="Вход"
+							onLogin={handleLogin}
+							buttonText={changeLoginBtnName}
+						/>
 					</Route>
 				</Switch>
 				
@@ -213,6 +298,15 @@ function App() {
 					isOpen={isImagePopupOpen} 
 					onClose={closeAllPopups} 
 				/>
+
+				{isRegisterFormOpen &&
+					<InfoToolTip 
+						singupError={signupError}
+						isSignup={isSignup}
+						isOpen={isRegisterFormOpen}
+						onClose={closeAllPopups}
+					/>
+				}
 
 			</div>
 		</CurrentUserContext.Provider>

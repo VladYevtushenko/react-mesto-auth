@@ -16,7 +16,6 @@ function EditProfilePopup ({
     const [nameValidationMessage, setNameValidationMessage] = useState('');
     const [descriptionValidationMessage, setDescriptionValidationMessage] = useState('');
     const [isFormValid, setFormValid] = useState(false);
-    // const [buttonText, setButtonText] = useState('Сохранить');
 
     useEffect(() => {
         setName(currentUser.name);
@@ -26,7 +25,6 @@ function EditProfilePopup ({
         setFormValid(true);
         setNameValidationMessage('');
         setDescriptionValidationMessage('');
-        // setButtonText('Сохранить');
     }, [currentUser, isOpen]);
 
     useEffect(() => {
@@ -54,7 +52,6 @@ function EditProfilePopup ({
 
     function handleSubmit(evt) {
         evt.preventDefault();
-        // setButtonText('Сохранение...');
         onEditUser({ 
             name, 
             about: description,
