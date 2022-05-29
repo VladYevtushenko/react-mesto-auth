@@ -9,4 +9,5 @@
 .auth__login-link:hover {
     cursor: pointer;
     opacity: .6;
+    text-decoration: underline;
 }

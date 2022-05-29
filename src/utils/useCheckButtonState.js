@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function checkButtonState(form, isValid) {
+function useCheckButtonState(form, isValid) {
     const [submitBtnState, setSubmitBtnState] = useState(false)
 
     useEffect(() => {
@@ -14,4 +14,4 @@ function checkButtonState(form, isValid) {
     return submitBtnState;
 }
 
-export default checkButtonState;
+export default useCheckButtonState;

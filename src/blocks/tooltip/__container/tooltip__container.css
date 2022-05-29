@@ -7,6 +7,7 @@
     top: calc(100%/2 - 165px);
     left: calc(100%/2 - 215px);
     box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
 }
 
 @media screen and (max-width: 540px) {

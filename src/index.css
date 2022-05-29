@@ -1,10 +1,11 @@
 @import url(./vendor/fonts/fonts.css);
 @import url(./vendor/normalize.css);
-@import url(./blocks/body/body.css);
 @import url(./blocks/page/page.css);
 
 @import url(./blocks/header/header.css);
-@import url(./blocks/page/__header/page__header.css);
+@import url(./blocks/header/__container/header__container.css);
+@import url(./blocks/header/__container/_logged/header__container_logged.css);
+@import url(./blocks/header/__logo-container/header__logo-container.css);
 @import url(./blocks/header/__logo/header__logo.css);
 @import url(./blocks/header/__auth/header__auth.css);
 @import url(./blocks/header/__auth/_logged/header__auth_logged.css);
@@ -54,7 +55,6 @@
 @import url(./blocks/elements/__like-counter/elements__like-counter.css);
 @import url(./blocks/elements/__delete-button/elements__delete-button.css);
 
-@import url(./blocks/page/__footer/page__footer.css);
 @import url(./blocks/footer/footer.css);
 @import url(./blocks/footer/__copyright/footer__copyright.css);
 

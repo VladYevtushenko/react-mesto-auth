@@ -1,54 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import PopupWithForm from './PopupWithForm';
+import Validation from '../../utils/Validation';
 
-function AddPlacePopup ({ isOpen, onClose, onAddPlace, buttonText = 'Создать' }) {
+function AddPlacePopup ({ 
+    isOpen, 
+    onClose, 
+    onAddPlace, 
+    loggedIn, 
+    isValid,
+    errorMessage,
+    buttonText = 'Создать' 
+}) {
     const [name, setName] = useState('');
-    const [link, setLink] = useState('');
-    const [isNameValid, setNameValid] = useState(false);
-    const [isLinkValid, setLinkValid] = useState(false);
-    const [nameValidationMessage, setNameValidationMessage] = useState('');
-    const [linkValidationMassage, setLinkValidationMessage] = useState('');
-    const [isFormValid, setFormValid] = useState(false);
+    const [image, setImage] = useState('');
+
+    function handleName(e) {
+        setName(e.target.value);
+    }
+
+    function handleImage(e) {
+        setImage(e.target.value);
+    }
+
+    function handleFocus(e) {
+        e.target.select();
+    }
 
     useEffect(() => {
         setName('');
-        setLink('');
-        setNameValid(false);
-        setLinkValid(false);
-        setFormValid(false);
-        setNameValidationMessage('');
-        setLinkValidationMessage('');
-    }, [isOpen]);
+        setImage('');
+    }, [loggedIn])
 
-    useEffect (() => {
-        if (isNameValid && isLinkValid) {
-            setFormValid(true);
-        } else {
-            setFormValid(false);
-        }
-    }, [isNameValid, isLinkValid]);
-    
-    function handleChange(evt) {
-        switch (evt.target.name) {
-            case 'cardName':
-                setName(evt.target.value);
-                setNameValidationMessage(evt.target.validationMessage);
-                setNameValid(evt.target.validity.valid);
-            break;
-            case 'cardLink':
-                setLink(evt.target.value);
-                setLinkValidationMessage(evt.target.validationMessage);
-                setLinkValid(evt.target.validity.valid);
-            break;
-        }
-    }
+    function handleSubmit(e) {
+        e.preventDefault();
 
-    function handleSubmit(evt) {
-        evt.preventDefault();
         onAddPlace({
-            name,
-            link,
+            place: name,
+            img: image
         });
+        setName('');
+        setImage('');
     }
 
     return(
@@ -56,7 +47,8 @@ function AddPlacePopup ({ isOpen, onClose, onAddPlace, buttonText = 'Созда�
             name="card" 
             title="Новое место"  
             isOpen={isOpen} 
-            onClose={onClose} 
+            onClose={onClose}
+            isValid={isValid}
             onSubmit={handleSubmit}
             buttonText={buttonText}
         >
@@ -64,36 +56,27 @@ function AddPlacePopup ({ isOpen, onClose, onAddPlace, buttonText = 'Созда�
                 type="text" 
                 className="popup__input" 
                 placeholder="Название" 
-                id="popupCardName" 
                 name="cardName" 
                 minLength="2" 
                 maxLength="30" 
-                value={name || ''} 
-                onChange={handleChange} 
+                value={name}
+                onFocus={handleFocus} 
+                onChange={handleName}
                 required 
             />
-            <span className={`popup__error ${isNameValid ? '' : 'popup__error_visisble'}`}>
-                {nameValidationMessage}
-            </span>
+            <Validation errorMessage={errorMessage} name="cardName" />
+
             <input 
                 type="url" 
                 className="popup__input" 
                 placeholder="Ссылка на картинку" 
-                id="popupImageLink" 
-                name="cardLink" 
-                value={link || ''} 
-                onChange={handleChange} 
-                required 
+                name="img" 
+                value={image} 
+                onChange={handleImage}
+                onFocus={handleFocus}
+                required
             />
-            <span className={`popup__error ${isLinkValid ? '' : 'popup__error_visible'}`}>
-                {linkValidationMassage}
-            </span>
-            {/* <button 
-                className={`popup__save-button ${isFormValid ? '' : 'popup__save-button_disabled'}`} 
-                type="submit"
-            >
-                {buttonText}
-            </button> */}
+            <Validation errorMessage={errorMessage} name="img" />
         </PopupWithForm>
     );
 }

@@ -22,5 +22,6 @@
 @media screen and (max-width: 540px) {
     .auth__submit-btn {
         width: 238px;
+        margin: 22vh 0 15px;
     }
 }

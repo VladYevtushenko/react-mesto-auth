@@ -4,108 +4,54 @@ import ProtectedRoute from './ProtectedRoute';
 import Header from './Header/Header';
 import Main from './Main/Main';
 import Footer from './Footer/Footer';
+import Login from './Login';
+import Register from './popup-components/Register';
 import EditAvatarPopup from './popup-components/EditAvatarPopup';
 import EditProfilePopup from "./popup-components/EditProfilePopup";
 import ImagePopup from './popup-components/ImagePopup';
 import ConfirmPopup from './popup-components/ConfirmPopup';
-import Register from './popup-components/Register';
-import Login from './Login';
 import AddPlacePopup from './popup-components/AddPlacePopup';
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import api from '../utils/Api';
-import { register, authorize, getContent } from "../utils/Auth";
+import { register, authorize, getContent } from "../utils/auth";
 import InfoToolTip from './InfoToolTip';
 
 function App() {
+	const [currentUser, setCurrentUser] = useState({});
+	
+	const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
 	const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
 	const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
-	const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
 	const [isImagePopupOpen, setImagePopupOpen] = useState(false);
-	const [slectedCard, setSelectedCard] = useState(null);
-	const [cards, setCards] = useState([]);
-	const [currentUser, setCurrentUser] = useState({});
-	const [cardDelete, setCardDelete] = useState(null);
 	const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false);
+	const [isRegisterFormOpen, setIsRegistgerFormOpen] = useState(false);
+
+	const [cards, setCards] = useState([]);
+	const [slectedCard, setSelectedCard] = useState(null);
+	const [cardDelete, setCardDelete] = useState(null);
+
 	const [changeAvaButtonName, setChangeAvaButtonName] = useState('Сохранить');
 	const [changeProfileEditButtonName, setChangeProfileEditButtonName] = useState('Сохранить');
 	const [changeAddPlaceButtonName, setChangeAddPlaceButtonName] = useState('Создать');
 	const [changeDelButtonName, setChangeDelButtonName] = useState('Да');
 	const [changeAuthBtnName, setChangeAuthBtnName] = useState('Сохранить');
 	const [changeLoginBtnName, setChangeLoginBtnName] = useState('Войти ');
-	const [isRegisterFormOpen, setIsRegistgerFormOpen] = useState(false);
+	const [errorMessage, setErrorMessage] = useState({});
 	
 	const [loggedIn, setLoggedIn] = useState(false);
 	const [email, setEmail] = useState('');
 	const [isSignup, setIsSignup] = useState(false);
 	const [signupError, setSignupError] = useState('');
+
 	const history = useHistory();
 	
+// ava
 
 	function handleEditAvatarClick() {
 		setIsEditAvatarPopupOpen(true);
 	};
 
-	function handleEditProfileClick() {
-		setIsEditProfilePopupOpen(true);
-	};
-
-	function handleAddPlaceClick() {
-		setIsAddPlacePopupOpen(true);
-	};
-
-	function handleConfirmDelete(card) {
-		setIsConfirmPopupOpen(true);
-		setCardDelete(card);
-	}
-
-	function closeAllPopups() {
-		setIsEditProfilePopupOpen(false);
-		setIsAddPlacePopupOpen(false);
-		setIsEditAvatarPopupOpen(false);
-		setIsConfirmPopupOpen(false);
-		setImagePopupOpen(false);
-		setIsRegistgerFormOpen(false);
-		setSelectedCard(null);
-	};
-
-	function handleCardClick(card) {
-		setSelectedCard(card);
-		setImagePopupOpen(true);
-	};
-
-	function handleCardLike(card) {
-        const isLiked = card.likes.some(i => i._id === currentUser._id);
-        
-        api.changeLikeCardStatus(card._id, !isLiked).then((newCard) => {
-            setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
-        })
-			.catch((err) => console.log(err));
-    }
-
-	function handleCardDelete() {
-		setChangeDelButtonName('Удаление...');
-		api.deleteCard(cardDelete._id)
-			.then(() => {
-				setCards((state) => state.filter((c) => c._id !== cardDelete._id));
-				closeAllPopups();
-			})
-			.catch((err) => console.log(err))
-			.finally(() => {
-				setChangeDelButtonName('Да')
-			});
-	}
-
-	useEffect(() => {
-		Promise.all([api.getProfile(), api.getInitialCards()])
-			.then((res) => {
-				const [userData, cards] = res;
-				setCurrentUser(userData);
-				setCards(cards);
-			})
-			.catch((err) => console.log(err));
-	}, []);
-
-	function handleEditAvatar({avatar}) {
+	function handleEditAvatar(avatar) {
 		setChangeAvaButtonName('Сохраняю...');
 		api.editAvatar(avatar)
 			.then(user => {
@@ -117,6 +63,24 @@ function App() {
 				setChangeAvaButtonName('Сохранить')
 			});
 	}
+
+//
+
+useEffect(() => {
+	Promise.all([api.getProfile(), api.getInitialCards()])
+		.then((res) => {
+			const [userData, cards] = res;
+			setCurrentUser(userData);
+			setCards(cards);
+		})
+		.catch((err) => console.log(err));
+}, []);
+
+// profile
+
+	function handleEditProfileClick() {
+		setIsEditProfilePopupOpen(true);
+	};
 
 	function handleEditUser(userData) {
 		setChangeProfileEditButtonName('Сохраняю...');
@@ -131,6 +95,12 @@ function App() {
 			});
 	}
 
+// add place
+
+	function handleAddPlaceClick() {
+		setIsAddPlacePopupOpen(true);
+	};
+
 	function handleAddPlace(card) {
 		setChangeAddPlaceButtonName('Создание...');
 		api.postCard(card)
@@ -143,6 +113,51 @@ function App() {
 				setChangeAddPlaceButtonName('Создать')
 			});			
 	}
+
+	function handleConfirmDelete(card) {
+		setIsConfirmPopupOpen(true);
+		setCardDelete(card);
+	}
+
+	function closeAllPopups() {
+		setIsEditProfilePopupOpen(false);
+		setIsAddPlacePopupOpen(false);
+		setIsEditAvatarPopupOpen(false);
+		setIsConfirmPopupOpen(false);
+		setImagePopupOpen(false);
+		setIsRegistgerFormOpen(false);
+		setSelectedCard(null);
+		setErrorMessage({});
+	};
+
+	function handleCardClick(card) {
+		setSelectedCard(card);
+		setImagePopupOpen(true);
+	};
+
+	function handleCardDelete() {
+		setChangeDelButtonName('Удаление...');
+		api.deleteCard(cardDelete._id)
+			.then(() => {
+				setCards((state) => state.filter((c) => c._id !== cardDelete._id));
+				closeAllPopups();
+			})
+			.catch((err) => console.log(err))
+			.finally(() => {
+				setChangeDelButtonName('Да')
+			});
+	}
+
+	function handleCardLike(card) {
+        const isLiked = card.likes.some(i => i._id === currentUser._id);
+        
+        api.changeLikeCardStatus(card._id, !isLiked).then((newCard) => {
+            setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+        })
+			.catch((err) => console.log(err));
+    }
+
+// register & login
 
 	function handleRegister(password, email) {
 		setChangeAuthBtnName('Сохраняю...');
@@ -160,17 +175,21 @@ function App() {
 					setIsRegistgerFormOpen(true);
 				}
 			})
-		
-		.finally(() => {
-			setChangeAuthBtnName('Сохраняю...')
-		});
+			.catch((err) => {
+				setSignupError(err.message);
+				setIsSignup(false);
+				setIsRegistgerFormOpen(true);
+			})
+			.finally(() => {
+				setChangeAuthBtnName('Сохраняю...');
+			});
 	}
 
 	function handleLogin(password, email) {
 		setChangeLoginBtnName('Вход...');
 		return authorize(password, email)
 			.then(data => {
-				if (data.token) {
+				if(data.token) {
 					localStorage.setItem('jwt', data.token);
 					checkToken();
 				}
@@ -185,7 +204,7 @@ function App() {
 	}
 
 	function checkToken() {
-		if (localStorage.getItem('jwt')) {
+		if(localStorage.getItem('jwt')) {
 			let token = localStorage.getItem('jwt');
 			getContent(token)
 				.then(res => {
@@ -204,7 +223,7 @@ function App() {
 		if (loggedIn) {
 			history.push('/')
 		}
-	}, [loggedIn]);
+	},[loggedIn]);
 
 	function handleSingOut() {
 		localStorage.removeItem('jwt');
@@ -212,6 +231,20 @@ function App() {
 		setLoggedIn(false);
 		history.push('/sing-in');
 	}
+
+// validity 
+
+	function checkInputValidity(e) {
+		if(!e.currentTarget.checkValidity()) {
+			setErrorMessage({...errorMessage, [e.target.name]: e.target.validationMessage});
+		} else setErrorMessage({});
+	}
+
+	function resetValidation() {
+		setErrorMessage({});
+	}
+
+// close by esc
 
 	useEffect(() => {
 		function closeByEsc(evt) {
@@ -226,20 +259,21 @@ function App() {
 
 	return (
 		<CurrentUserContext.Provider value={currentUser}>
-			<div>
+			<div className="page">
 				<Header 
 					loggedIn={loggedIn}
 					email={email}
 					onSignOut={handleSingOut}
+					resetValidation={resetValidation}
 				/>
 
 				<Switch>
 					<ProtectedRoute exact path="/" loggedIn={loggedIn}>
 						<Main
 							cards={cards}
+							onEditAvatar={handleEditAvatarClick}
 							onEditProfile={handleEditProfileClick}
 							onAddPlace={handleAddPlaceClick}
-							onEditAvatar={handleEditAvatarClick}
 							onCardClick={handleCardClick}
 							onCardLike={handleCardLike}
 							onCardDelete={handleConfirmDelete}
@@ -251,6 +285,9 @@ function App() {
 							title="Регистрация"
 							onRegister={handleRegister}
 							buttonText={changeAuthBtnName}
+							errorMessage={errorMessage}
+							isValid={checkInputValidity}
+							resetValidation={resetValidation}
 						/>
 					</Route>
 
@@ -259,17 +296,20 @@ function App() {
 							title="Вход"
 							onLogin={handleLogin}
 							buttonText={changeLoginBtnName}
+							errorMessage={errorMessage}
+							isValid={checkInputValidity}
 						/>
 					</Route>
 				</Switch>
-				
-				<Footer />
 
 				<EditAvatarPopup 
 					isOpen={isEditAvatarPopupOpen} 
 					onClose={closeAllPopups} 
 					onEditAvatar={handleEditAvatar}
 					buttonText={changeAvaButtonName}
+					loggedIn={loggedIn}
+					errorMessage={errorMessage}
+					isValid={checkInputValidity}
 				/>
 
 				<EditProfilePopup 
@@ -277,6 +317,8 @@ function App() {
 					onClose={closeAllPopups} 
 					onEditUser={handleEditUser}
 					buttonText={changeProfileEditButtonName}
+					errorMessage={errorMessage}
+					isValid={checkInputValidity}
 				/>
 
 				<AddPlacePopup 
@@ -284,6 +326,9 @@ function App() {
 					onClose={closeAllPopups} 
 					onAddPlace={handleAddPlace}
 					buttonText={changeAddPlaceButtonName}
+					loggedIn={loggedIn}
+					errorMessage={errorMessage}
+					isValid={checkInputValidity}
 				/>
 
 				<ConfirmPopup 
@@ -307,6 +352,8 @@ function App() {
 						onClose={closeAllPopups}
 					/>
 				}
+
+				<Footer />
 
 			</div>
 		</CurrentUserContext.Provider>
