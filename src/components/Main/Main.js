@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
 import Card from '../Card/Card';
 
@@ -11,7 +11,7 @@ function Main({
     onCardDelete, 
     cards 
 }) {
-    const currentUser = useContext(CurrentUserContext);
+    const currentUser = React.useContext(CurrentUserContext);
 
     return (
         <main className="main">

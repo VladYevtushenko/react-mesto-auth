@@ -1,34 +1,34 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PopupWithForm from './PopupWithForm';
+import Validation from '../../utils/Validation';
 
 function EditAvatarPopup({ 
     isOpen, 
     onClose, 
     onEditAvatar,
-    buttonText,
+    loggedIn,
+    isValid,
+    errorMessage,
+    buttonText
 }) {
-    const link = useRef();
-    const [isLinkValid, setLinkValid] = useState(false);
-    const [linkValidationMassage, setLinkValidationMessage] = useState('');
+    const [avatar, setAvatar] = useState('');
 
-    function isAvaLinkValid(link) {
-        if (!link.validity.valid) {
-            setLinkValidationMessage(link.validationMessage);
-            setLinkValid(false);
-        } else {
-            setLinkValid(true);
-        }
+    function handleAvatar(e) {
+        setAvatar(e.target.value);
+    }
+    
+    function handleFocus(e) {
+        e.target.select();
     }
 
     useEffect(() => {
-        link.current.value = '';
-    }, [isOpen]);
+        setAvatar('');
+    }, [loggedIn]);
 
     function handleSubmit(evt) {
         evt.preventDefault();
-        onEditAvatar({
-            avatar: link.current.value,
-        });
+        onEditAvatar({ avatar });
+        setAvatar('');
     }
 
     return (
@@ -36,7 +36,8 @@ function EditAvatarPopup({
             name="avatar" 
             title="Обновить аватар" 
             isOpen={isOpen} 
-            onClose={onClose} 
+            onClose={onClose}
+            isValid={isValid}
             onSubmit={handleSubmit}
             buttonText={buttonText}
         >
@@ -44,18 +45,13 @@ function EditAvatarPopup({
                 type="url" 
                 className="popup__input" 
                 placeholder="Ссылка на картинку" 
-                id="avatarLink" 
                 name="avatarLink" 
-                ref={link} 
-                onChange={() => isAvaLinkValid(link.current)} 
+                value={avatar}
+                onChange={handleAvatar}
+                onFocus={handleFocus}
                 required 
             />
-            <span 
-                className={`popup__error avatarLink-error ${isLinkValid ? '' : 'popup__error_visible'}`}
-            >
-                {linkValidationMassage}
-            </span>
-            {/* <button className={`popup__save-button ${isLinkValid ? '' : 'popup__save-button_disabled'}`} type="submit">{buttonText}</button> */}
+            <Validation errorMessage={errorMessage} name="avatarLink" />
 		</PopupWithForm>
     )
 }
