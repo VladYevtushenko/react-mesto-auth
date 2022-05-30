@@ -23,6 +23,8 @@ function Login({ title, onLogin, isValid, buttonText, errorMessage }) {
 
     function handleSubmit(e) {
         e.preventDefault();
+        console.log('hi');
+
         onLogin(password, email);
     }
 
@@ -34,6 +36,7 @@ function Login({ title, onLogin, isValid, buttonText, errorMessage }) {
                 noValidate
                 name="login"
                 method="post"
+                id="login"
                 action="#"
                 onSubmit={handleSubmit}
                 onChange={isValid}

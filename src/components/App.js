@@ -225,11 +225,11 @@ useEffect(() => {
 		}
 	},[loggedIn]);
 
-	function handleSingOut() {
+	function handleSignOut() {
 		localStorage.removeItem('jwt');
 		setEmail('');
 		setLoggedIn(false);
-		history.push('/sing-in');
+		history.push('/sign-in');
 	}
 
 // validity 
@@ -263,7 +263,7 @@ useEffect(() => {
 				<Header 
 					loggedIn={loggedIn}
 					email={email}
-					onSignOut={handleSingOut}
+					onSignOut={handleSignOut}
 					resetValidation={resetValidation}
 				/>
 
@@ -281,6 +281,7 @@ useEffect(() => {
 					</ProtectedRoute>
 
 					<Route path="/sign-up">
+						
 						<Register 
 							title="Регистрация"
 							onRegister={handleRegister}
@@ -289,6 +290,7 @@ useEffect(() => {
 							isValid={checkInputValidity}
 							resetValidation={resetValidation}
 						/>
+					
 					</Route>
 
 					<Route path="/sign-in">
@@ -346,7 +348,7 @@ useEffect(() => {
 
 				{isRegisterFormOpen &&
 					<InfoToolTip 
-						singupError={signupError}
+						signupError={signupError}
 						isSignup={isSignup}
 						isOpen={isRegisterFormOpen}
 						onClose={closeAllPopups}

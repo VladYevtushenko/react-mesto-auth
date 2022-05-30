@@ -21,7 +21,7 @@ export  function register(password, email) {
 }
 
 export function authorize(password, email) {
-    return fetch (`${baseUrl}/singin`, {
+    return fetch (`${baseUrl}/signin`, {
         method: 'POST',
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({password, email})

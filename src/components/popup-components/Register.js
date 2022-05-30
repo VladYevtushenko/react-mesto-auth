@@ -24,8 +24,9 @@ function Register({ title, onRegister, isValid, buttonText, errorMessage, resetV
 
     function handleSubmit(e) {
         e.preventDefault();
-        onRegister(password, email)
+        onRegister(password, email);
     }
+
 
     return (
         <div className="auth">

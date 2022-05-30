@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { Route, NavLink } from 'react-router-dom';
 import logo from '../../images/Mesto.svg';
 import closeBtn from '../../images/Close-Icon.svg';
 import burgerBtn from '../../images/burger.svg';
@@ -7,6 +7,7 @@ import burgerBtn from '../../images/burger.svg';
 function Header ({ loggedIn, email, resetValidation, onSignOut }) {
     const [isInvisible, setIsInvisible] = useState(true);
     const mobileBtn = isInvisible ? burgerBtn : closeBtn;
+
 
     function handleBurgerBtnClick() {
         isInvisible ? setIsInvisible(false): setIsInvisible(true);
@@ -44,22 +45,27 @@ function Header ({ loggedIn, email, resetValidation, onSignOut }) {
                         Выйти
                     </button>
                     <nav className={`header__nav header__nav${!loggedIn ? '_active' : ''}`}>
-                        <NavLink 
-                            to="/sing-up" 
-                            activeClassName="header__link" 
-                            className="header__link_active"
-                            onClick={resetValidation}
-                        >
-                            Регистрация
-                        </NavLink>
-                        <NavLink 
-                            to="/sign-in"
-                            activeClassName="header__link"
-                            className="header__link_active"
-                            onClick={resetValidation}
-                        >
-                            Войти
-                        </NavLink>
+                        <Route path="/sign-in">
+                            <NavLink 
+                                to="/sign-up" 
+                                activeClassName="header__link" 
+                                className="header__link_active"
+                                onClick={resetValidation}
+                            >
+                                Регистрация
+                            </NavLink>
+                        </Route>
+                        <Route path="/sign-up">
+                            <NavLink 
+                                to="/sign-in"
+                                activeClassName="header__link"
+                                className="header__link_active"
+                                onClick={resetValidation}
+                            >
+                                Войти
+                            </NavLink>
+                        </Route>
+
                     </nav>
                 </div>
             </div>

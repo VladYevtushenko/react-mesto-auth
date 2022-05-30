@@ -32,6 +32,7 @@ function PopupWithForm ({
                     method="post"
                     className={`popup__form popup__form_type_${name}`} 
                     name={name} 
+                    id={name}
                     noValidate 
                     onSubmit={onSubmit}
                     onChange={isValid}
@@ -42,7 +43,6 @@ function PopupWithForm ({
                         type='submit'
                         disabled={!submitButtonState}
                         form={name}
-                        onSubmit={onSubmit}
                     >
                         {buttonText}
                     </button>

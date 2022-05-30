@@ -33,10 +33,9 @@ function AddPlacePopup ({
 
     function handleSubmit(e) {
         e.preventDefault();
-
         onAddPlace({
-            place: name,
-            img: image
+            name: name,
+            link: image
         });
         setName('');
         setImage('');
