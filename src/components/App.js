@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { Route, Switch, useHistory } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute';
 import Header from './Header/Header';
 import Main from './Main/Main';
 import Footer from './Footer/Footer';
@@ -24,6 +26,12 @@ function App() {
 	const [changeProfileEditButtonName, setChangeProfileEditButtonName] = useState('Сохранить');
 	const [changeAddPlaceButtonName, setChangeAddPlaceButtonName] = useState('Создать');
 	const [changeDelButtonName, setChangeDelButtonName] = useState('Да');
+	
+	const [loggedIn, setLoggedIn] = useState(false);
+	const [email, setEmail] = useState('');
+	const [isSignUp, setIsSingUp] = useState(false);
+	const [signUpError, setSingUpError] = useState('');
+	const history = useHistory();
 	
 
 	function handleEditAvatarClick() {
@@ -142,16 +150,34 @@ function App() {
 	return (
 		<CurrentUserContext.Provider value={currentUser}>
 			<div>
-				<Header />
-				<Main
-					cards={cards}
-					onEditProfile={handleEditProfileClick}
-					onAddPlace={handleAddPlaceClick}
-					onEditAvatar={handleEditAvatarClick}
-					onCardClick={handleCardClick}
-					onCardLike={handleCardLike}
-					onCardDelete={handleConfirmDelete}
+				<Header 
+					loggedIn={loggedIn}
+					email={email}
+					// onSignOut={handleSingOut}
 				/>
+
+				<Switch>
+					<ProtectedRoute exact path="/" loggedIn={loggedIn}>
+						<Main
+							cards={cards}
+							onEditProfile={handleEditProfileClick}
+							onAddPlace={handleAddPlaceClick}
+							onEditAvatar={handleEditAvatarClick}
+							onCardClick={handleCardClick}
+							onCardLike={handleCardLike}
+							onCardDelete={handleConfirmDelete}
+						/>
+					</ProtectedRoute>
+
+					<Route path="/sign-up">
+
+					</Route>
+
+					<Route path="/sign-in">
+
+					</Route>
+				</Switch>
+				
 				<Footer />
 
 				<EditAvatarPopup 
