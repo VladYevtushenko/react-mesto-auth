@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { Route, Switch, useHistory } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute';
 import Header from './Header/Header';
 import Main from './Main/Main';
 import Footer from './Footer/Footer';
+import Login from './Login';
+import Register from './popup-components/Register';
 import EditAvatarPopup from './popup-components/EditAvatarPopup';
 import EditProfilePopup from "./popup-components/EditProfilePopup";
 import ImagePopup from './popup-components/ImagePopup';
@@ -9,87 +13,45 @@ import ConfirmPopup from './popup-components/ConfirmPopup';
 import AddPlacePopup from './popup-components/AddPlacePopup';
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import api from '../utils/Api';
+import { register, authorize, getContent } from "../utils/auth";
+import InfoToolTip from './InfoToolTip';
 
 function App() {
+	const [currentUser, setCurrentUser] = useState({});
+	
+	const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
 	const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
 	const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
-	const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
 	const [isImagePopupOpen, setImagePopupOpen] = useState(false);
-	const [slectedCard, setSelectedCard] = useState(null);
-	const [cards, setCards] = useState([]);
-	const [currentUser, setCurrentUser] = useState({});
-	const [cardDelete, setCardDelete] = useState(null);
 	const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false);
+	const [isRegisterFormOpen, setIsRegistgerFormOpen] = useState(false);
+
+	const [cards, setCards] = useState([]);
+	const [slectedCard, setSelectedCard] = useState(null);
+	const [cardDelete, setCardDelete] = useState(null);
+
 	const [changeAvaButtonName, setChangeAvaButtonName] = useState('Сохранить');
 	const [changeProfileEditButtonName, setChangeProfileEditButtonName] = useState('Сохранить');
 	const [changeAddPlaceButtonName, setChangeAddPlaceButtonName] = useState('Создать');
 	const [changeDelButtonName, setChangeDelButtonName] = useState('Да');
+	const [changeAuthBtnName, setChangeAuthBtnName] = useState('Сохранить');
+	const [changeLoginBtnName, setChangeLoginBtnName] = useState('Войти ');
+	const [errorMessage, setErrorMessage] = useState({});
 	
+	const [loggedIn, setLoggedIn] = useState(false);
+	const [email, setEmail] = useState('');
+	const [isSignup, setIsSignup] = useState(false);
+	const [signupError, setSignupError] = useState('');
+
+	const history = useHistory();
+	
+// ava
 
 	function handleEditAvatarClick() {
 		setIsEditAvatarPopupOpen(true);
 	};
 
-	function handleEditProfileClick() {
-		setIsEditProfilePopupOpen(true);
-	};
-
-	function handleAddPlaceClick() {
-		setIsAddPlacePopupOpen(true);
-	};
-
-	function handleConfirmDelete(card) {
-		setIsConfirmPopupOpen(true);
-		setCardDelete(card);
-	}
-
-	function closeAllPopups() {
-		setIsEditProfilePopupOpen(false);
-		setIsAddPlacePopupOpen(false);
-		setIsEditAvatarPopupOpen(false);
-		setIsConfirmPopupOpen(false);
-		setImagePopupOpen(false);
-		setSelectedCard(null);
-	};
-
-	function handleCardClick(card) {
-		setSelectedCard(card);
-		setImagePopupOpen(true);
-	};
-
-	function handleCardLike(card) {
-        const isLiked = card.likes.some(i => i._id === currentUser._id);
-        
-        api.changeLikeCardStatus(card._id, !isLiked).then((newCard) => {
-            setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
-        })
-			.catch((err) => console.log(err));
-    }
-
-	function handleCardDelete() {
-		setChangeDelButtonName('Удаление...');
-		api.deleteCard(cardDelete._id)
-			.then(() => {
-				setCards((state) => state.filter((c) => c._id !== cardDelete._id));
-				closeAllPopups();
-			})
-			.catch((err) => console.log(err))
-			.finally(() => {
-				setChangeDelButtonName('Да')
-			});
-	}
-
-	useEffect(() => {
-		Promise.all([api.getProfile(), api.getInitialCards()])
-			.then((res) => {
-				const [userData, cards] = res;
-				setCurrentUser(userData);
-				setCards(cards);
-			})
-			.catch((err) => console.log(err));
-	}, []);
-
-	function handleEditAvatar({avatar}) {
+	function handleEditAvatar(avatar) {
 		setChangeAvaButtonName('Сохраняю...');
 		api.editAvatar(avatar)
 			.then(user => {
@@ -101,6 +63,24 @@ function App() {
 				setChangeAvaButtonName('Сохранить')
 			});
 	}
+
+//
+
+useEffect(() => {
+	Promise.all([api.getProfile(), api.getInitialCards()])
+		.then((res) => {
+			const [userData, cards] = res;
+			setCurrentUser(userData);
+			setCards(cards);
+		})
+		.catch((err) => console.log(err));
+}, []);
+
+// profile
+
+	function handleEditProfileClick() {
+		setIsEditProfilePopupOpen(true);
+	};
 
 	function handleEditUser(userData) {
 		setChangeProfileEditButtonName('Сохраняю...');
@@ -115,6 +95,12 @@ function App() {
 			});
 	}
 
+// add place
+
+	function handleAddPlaceClick() {
+		setIsAddPlacePopupOpen(true);
+	};
+
 	function handleAddPlace(card) {
 		setChangeAddPlaceButtonName('Создание...');
 		api.postCard(card)
@@ -127,6 +113,138 @@ function App() {
 				setChangeAddPlaceButtonName('Создать')
 			});			
 	}
+
+	function handleConfirmDelete(card) {
+		setIsConfirmPopupOpen(true);
+		setCardDelete(card);
+	}
+
+	function closeAllPopups() {
+		setIsEditProfilePopupOpen(false);
+		setIsAddPlacePopupOpen(false);
+		setIsEditAvatarPopupOpen(false);
+		setIsConfirmPopupOpen(false);
+		setImagePopupOpen(false);
+		setIsRegistgerFormOpen(false);
+		setSelectedCard(null);
+		setErrorMessage({});
+	};
+
+	function handleCardClick(card) {
+		setSelectedCard(card);
+		setImagePopupOpen(true);
+	};
+
+	function handleCardDelete() {
+		setChangeDelButtonName('Удаление...');
+		api.deleteCard(cardDelete._id)
+			.then(() => {
+				setCards((state) => state.filter((c) => c._id !== cardDelete._id));
+				closeAllPopups();
+			})
+			.catch((err) => console.log(err))
+			.finally(() => {
+				setChangeDelButtonName('Да')
+			});
+	}
+
+	function handleCardLike(card) {
+        const isLiked = card.likes.some(i => i._id === currentUser._id);
+        
+        api.changeLikeCardStatus(card._id, !isLiked).then((newCard) => {
+            setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+        })
+			.catch((err) => console.log(err));
+    }
+
+// register & login
+
+	function handleRegister(password, email) {
+		setChangeAuthBtnName('Сохраняю...');
+		return register(password, email)
+			.then(res => {
+				if(res.data._id) {
+					setIsSignup(true);
+					setIsRegistgerFormOpen(true);
+					setTimeout(() => {
+						setIsRegistgerFormOpen(false);
+					}, 2000);
+					history.push('/sign-in');
+				} else {
+					setIsSignup(false);
+					setIsRegistgerFormOpen(true);
+				}
+			})
+			.catch((err) => {
+				setSignupError(err.message);
+				setIsSignup(false);
+				setIsRegistgerFormOpen(true);
+			})
+			.finally(() => {
+				setChangeAuthBtnName('Сохраняю...');
+			});
+	}
+
+	function handleLogin(password, email) {
+		setChangeLoginBtnName('Вход...');
+		return authorize(password, email)
+			.then(data => {
+				if(data.token) {
+					localStorage.setItem('jwt', data.token);
+					checkToken();
+				}
+			})
+			.catch(err => {
+				console.log(err.message);
+				setSignupError('Некорректный email или пароль');
+				setIsSignup(false);
+				setIsRegistgerFormOpen(true);
+			})
+			.finally(() => setChangeLoginBtnName('Вход...'));
+	}
+
+	function checkToken() {
+		if(localStorage.getItem('jwt')) {
+			let token = localStorage.getItem('jwt');
+			getContent(token)
+				.then(res => {
+					setEmail(res.data.email);
+					setLoggedIn(true);
+				})
+				.catch(err => console.log(err.message));
+		}
+	}
+
+	useEffect(() => {
+		checkToken();
+	}, []);
+
+	useEffect(() => {
+		if (loggedIn) {
+			history.push('/')
+		}
+	},[loggedIn]);
+
+	function handleSignOut() {
+		localStorage.removeItem('jwt');
+		setEmail('');
+		setLoggedIn(false);
+		history.push('/sign-in');
+	}
+
+// validity 
+
+	function checkInputValidity(e) {
+		if(!e.currentTarget.checkValidity()) {
+			setErrorMessage({...errorMessage, [e.target.name]: e.target.validationMessage});
+		} else setErrorMessage({});
+	}
+
+	function resetValidation() {
+		setErrorMessage({});
+	}
+
+// close by esc
 
 	useEffect(() => {
 		function closeByEsc(evt) {
@@ -141,24 +259,59 @@ function App() {
 
 	return (
 		<CurrentUserContext.Provider value={currentUser}>
-			<div>
-				<Header />
-				<Main
-					cards={cards}
-					onEditProfile={handleEditProfileClick}
-					onAddPlace={handleAddPlaceClick}
-					onEditAvatar={handleEditAvatarClick}
-					onCardClick={handleCardClick}
-					onCardLike={handleCardLike}
-					onCardDelete={handleConfirmDelete}
+			<div className="page">
+				<Header 
+					loggedIn={loggedIn}
+					email={email}
+					onSignOut={handleSignOut}
+					resetValidation={resetValidation}
 				/>
-				<Footer />
+
+				<Switch>
+					<ProtectedRoute exact path="/" loggedIn={loggedIn}>
+						<Main
+							cards={cards}
+							onEditAvatar={handleEditAvatarClick}
+							onEditProfile={handleEditProfileClick}
+							onAddPlace={handleAddPlaceClick}
+							onCardClick={handleCardClick}
+							onCardLike={handleCardLike}
+							onCardDelete={handleConfirmDelete}
+						/>
+					</ProtectedRoute>
+
+					<Route path="/sign-up">
+						
+						<Register 
+							title="Регистрация"
+							onRegister={handleRegister}
+							buttonText={changeAuthBtnName}
+							errorMessage={errorMessage}
+							isValid={checkInputValidity}
+							resetValidation={resetValidation}
+						/>
+					
+					</Route>
+
+					<Route path="/sign-in">
+						<Login 
+							title="Вход"
+							onLogin={handleLogin}
+							buttonText={changeLoginBtnName}
+							errorMessage={errorMessage}
+							isValid={checkInputValidity}
+						/>
+					</Route>
+				</Switch>
 
 				<EditAvatarPopup 
 					isOpen={isEditAvatarPopupOpen} 
 					onClose={closeAllPopups} 
 					onEditAvatar={handleEditAvatar}
 					buttonText={changeAvaButtonName}
+					loggedIn={loggedIn}
+					errorMessage={errorMessage}
+					isValid={checkInputValidity}
 				/>
 
 				<EditProfilePopup 
@@ -166,6 +319,8 @@ function App() {
 					onClose={closeAllPopups} 
 					onEditUser={handleEditUser}
 					buttonText={changeProfileEditButtonName}
+					errorMessage={errorMessage}
+					isValid={checkInputValidity}
 				/>
 
 				<AddPlacePopup 
@@ -173,6 +328,9 @@ function App() {
 					onClose={closeAllPopups} 
 					onAddPlace={handleAddPlace}
 					buttonText={changeAddPlaceButtonName}
+					loggedIn={loggedIn}
+					errorMessage={errorMessage}
+					isValid={checkInputValidity}
 				/>
 
 				<ConfirmPopup 
@@ -187,6 +345,17 @@ function App() {
 					isOpen={isImagePopupOpen} 
 					onClose={closeAllPopups} 
 				/>
+
+				{isRegisterFormOpen &&
+					<InfoToolTip 
+						signupError={signupError}
+						isSignup={isSignup}
+						isOpen={isRegisterFormOpen}
+						onClose={closeAllPopups}
+					/>
+				}
+
+				<Footer />
 
 			</div>
 		</CurrentUserContext.Provider>

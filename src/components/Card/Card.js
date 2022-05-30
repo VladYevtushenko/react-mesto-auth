@@ -24,14 +24,28 @@ function Card({ card, onCardClick, onCardLike, onCardDelete }) {
 
     return (
         <li className="elements__card">
-            <img className="elements__photo" src={card.link} alt={card.name} onClick={handleCardClick} />
+            <img 
+                className="elements__photo" 
+                src={card.link} 
+                alt={card.name} 
+                onClick={handleCardClick} />
             {isOwn ? (
-                <button className="elements__delete-button" onClick={handleDeleteClick} type="button" eria-label="delete-button"></button>
+                <button 
+                    className="elements__delete-button" 
+                    onClick={handleDeleteClick} 
+                    type="button" 
+                    eria-label="delete-button">
+                </button>
             ) : ('')}
             <div className="elements__info">
                 <h2 className="elements__title">{card.name}</h2>
                 <div className="elements__like-area">
-                    <button className={`elements__like-button ${cardLikeButtonClassName}`} onClick={handleLikeClick} type="button" aria-label="like-button"></button>
+                    <button 
+                        className={`elements__like-button ${cardLikeButtonClassName}`} 
+                        onClick={handleLikeClick} 
+                        type="button" 
+                        aria-label="like-button"
+                    ></button>
                     <span className="elements__like-counter">{card.likes.length}</span>
                 </div>
             </div>
